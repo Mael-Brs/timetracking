@@ -1,0 +1,22 @@
+{
+  "name": "timetracking",
+  "version": "1.0.0",
+  "description": "Lightweight CLI to track work time",
+  "main": "dist/index.js",
+  "bin": {
+    "tt": "./dist/index.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc && node dist/index.js"
+  },
+  "keywords": ["time", "tracking", "cli"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  }
+}

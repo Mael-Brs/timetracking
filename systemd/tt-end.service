@@ -1,0 +1,12 @@
+[Unit]
+Description=End time tracking session on shutdown
+DefaultDependencies=no
+Before=shutdown.target reboot.target halt.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/mbras/dev/timetracking/dist/index.js end
+Environment=PATH=/home/mbras/.local/share/pnpm:/usr/local/bin:/usr/bin:/bin
+
+[Install]
+WantedBy=shutdown.target reboot.target halt.target

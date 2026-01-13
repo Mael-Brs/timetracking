@@ -1,0 +1,11 @@
+[Unit]
+Description=Start time tracking session
+After=default.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/mbras/dev/timetracking/dist/index.js start
+Environment=PATH=/home/mbras/.local/share/pnpm:/usr/local/bin:/usr/bin:/bin
+
+[Install]
+WantedBy=default.target
