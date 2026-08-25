@@ -73,7 +73,8 @@ function isWeekend(dateStr: string): boolean {
   return day === 0 || day === 6;
 }
 
-function getDayTarget(dateStr: string): number {
+function getDayTarget(dateStr: string, entry?: DayEntry): number {
+  if (entry?.targetOverride !== undefined) return entry.targetOverride;
   return isWeekend(dateStr) ? 0 : 7 * 60;
 }
 
@@ -120,7 +121,7 @@ export function makeTracker(deps: Deps) {
 
     let balanceToAdd = 0;
     for (const date of entriesToArchive) {
-      balanceToAdd += calculateDayMinutes(data.entries[date]) - getDayTarget(date);
+      balanceToAdd += calculateDayMinutes(data.entries[date]) - getDayTarget(date, data.entries[date]);
       delete data.entries[date];
     }
 
@@ -196,7 +197,8 @@ export function makeTracker(deps: Deps) {
 
     const freshData = load();
     const today = getToday();
-    const targetMinutes = getDayTarget(today);
+    const todayEntry = freshData.entries[today];
+    const targetMinutes = getDayTarget(today, todayEntry);
     const carryOver = freshData.balanceCarryOver ?? 0;
     const unclosedSessions = collectUnclosedPastSessions(freshData, today);
 
@@ -268,7 +270,7 @@ export function makeTracker(deps: Deps) {
       }
 
       const isTodayFlag = dateStr === todayStr;
-      const dayTarget = getDayTarget(dateStr);
+      const dayTarget = getDayTarget(dateStr, entry);
       const dayBalance = minutes - dayTarget;
 
       days.push({ date: dateStr, minutes, isToday: isTodayFlag, targetMinutes: dayTarget, balanceMinutes: dayBalance });
@@ -310,7 +312,7 @@ export function makeTracker(deps: Deps) {
     lastSession.end = endTime;
 
     const worked = calculateDayMinutes(entry);
-    const balance = worked - getDayTarget(date);
+    const balance = worked - getDayTarget(date, entry);
     data.balanceCarryOver = (data.balanceCarryOver ?? 0) + balance;
     delete data.entries[date];
     save(data);
@@ -318,7 +320,25 @@ export function makeTracker(deps: Deps) {
     return { message: `Fixed ${date}: closed at ${endTime}`, workedMinutes: worked };
   }
 
-  return { start, pause, end, status, week, fix };
+  function half(): { error?: string; message?: string } {
+    const data = load();
+    const today = getToday();
+
+    if (isWeekend(today)) {
+      return { error: 'Today is a weekend — no target to halve' };
+    }
+
+    if (!data.entries[today]) {
+      data.entries[today] = { sessions: [] };
+    }
+
+    data.entries[today].targetOverride = 3 * 60 + 30;
+    save(data);
+
+    return { message: 'Target set to half day (3h30)' };
+  }
+
+  return { start, pause, end, status, week, fix, half };
 }
 
 const defaultDeps: Deps = {
@@ -336,3 +356,4 @@ export const end = defaultTracker.end;
 export const status = defaultTracker.status;
 export const week = defaultTracker.week;
 export const fix = defaultTracker.fix;
+export const half = defaultTracker.half;

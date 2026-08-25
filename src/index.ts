@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { start, pause, end, status, week, fix } from './lib/tracker.js';
+import { start, pause, end, status, week, fix, half } from './lib/tracker.js';
 import { formatDuration, formatBalance, getDayName, colorize } from './lib/display.js';
 
 const command = process.argv[2];
@@ -50,6 +50,7 @@ Commands:
   end [HH:MM]                End work day
   status                     Show today's progress and balance
   week                       Show weekly summary with balance
+  half                       Set today's target to half a day (3h30)
   fix <YYYY-MM-DD> <HH:MM>   Close a forgotten open session on a past day
 
 Examples:
@@ -177,6 +178,15 @@ function handleWeek(): void {
   console.log('');
 }
 
+function handleHalf(): void {
+  const result = half();
+  if (result.error) {
+    console.log(colorize(result.error, 'yellow'));
+  } else {
+    console.log(colorize(result.message!, 'green'));
+  }
+}
+
 function handleFix(): void {
   const date = parseDate(timeArg);
   const endTime = parseTime(process.argv[4]);
@@ -208,6 +218,9 @@ switch (command) {
     break;
   case 'week':
     handleWeek();
+    break;
+  case 'half':
+    handleHalf();
     break;
   case 'fix':
     handleFix();

@@ -8,6 +8,7 @@ export interface Session {
 
 export interface DayEntry {
   sessions: Session[];
+  targetOverride?: number;
 }
 
 export interface Data {
