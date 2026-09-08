@@ -1,4 +1,5 @@
-import { load as defaultLoad, save as defaultSave, getToday as defaultGetToday, getCurrentTime as defaultGetCurrentTime, DayEntry, Data } from './storage.js';
+import { load as defaultLoad, save as defaultSave, getToday as defaultGetToday, getCurrentTime as defaultGetCurrentTime } from './storage.js';
+import type { DayEntry, Data } from './storage.js';
 
 interface Deps {
   load: () => Data;

@@ -1,4 +1,9 @@
 import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 import path from 'node:path';
 
 export interface Session {
@@ -16,7 +21,7 @@ export interface Data {
   balanceCarryOver?: number; // Minutes carried over from archived weeks
 }
 
-const DATA_DIR = path.join(import.meta.dirname, '..', '..');
+const DATA_DIR = path.join(__dirname, '..', '..');
 const DATA_FILE = path.join(DATA_DIR, 'data.json');
 
 function ensureDataDir(): void {
